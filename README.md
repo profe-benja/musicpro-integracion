@@ -29,6 +29,8 @@ Este es el archivo README para el proyecto Django Ecommerce.
     pip install -r requirements.txt
     ```
 
+    <!-- pip freeze > requirements.txt -->
+
 5. Crea una copia del archivo `.env.example` y renómbralo a `.env`. Actualiza las configuraciones necesarias en el archivo `.env`.
 
 6. Ejecuta las migraciones de la base de datos:
