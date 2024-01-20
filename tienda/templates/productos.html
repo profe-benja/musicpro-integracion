@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Product Listing</title>
+</head>
+<body>
+    
+    <h1>MIS PRODUCTOS</h1>
+
+    <a href="{% url 'boletas' %}">VER BOLETAS</a>
+    <a href="{% url 'listar_productos' %}">COMPRAR PRODUCTOS</a>
+
+    <div class="container mt-5">
+        <h2>Product Listing</h2>
+
+        <div class="row">
+            <!-- Product cards go here -->
+            <div class="col-md-8">
+                <div class="row">
+                    {% for p  in productos %}
+                    <div class="col-2">
+                        <div class="card text-start">
+                            <img class="card-img-top" src="{{ p.asset }}" alt="Title" />
+                            <div class="card-body">
+                                <h4 class="card-title">{{ p.nombre }}</h4>
+                                <p class="card-text">Category: {{ p.codigo }}</p>
+                                <p class="card-text">Price: ${{ p.precio }}</p>
+                                <button class="btn btn-primary" onclick="addToCart({{p.id}}, '{{p.nombre}}',{{p.precio}})">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                  <div class="card-body">
+                    <h3>Shopping Cart</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartItems">
+                            <!-- Cart items will be added here dynamically -->
+                        </tbody>
+                    </table>
+
+
+                    <form action="{% url 'pagar' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" id="listado_productos" name="listado_productos">
+    
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label">Direccion</label>
+                            <input type="text" class="form-control" id="direccion" name="direccion" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">PAGAR</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+            </div>
+                
+            
+            <!-- Repeat similar card structures for other products -->
+
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        var cart = [];
+
+        function addToCart(id, name, price) {
+            // Check if the product is already in the cart
+            var existingItem = cart.find(item => item.id === id);
+
+            if (existingItem) {
+                // If the product is already in the cart, increase the quantity and update total
+                existingItem.quantity++;
+                existingItem.total = existingItem.quantity * price;
+            } else {
+                // If the product is not in the cart, add it with quantity 1
+                var newItem = {
+                    id: id,
+                    name: name,
+                    quantity: 1,
+                    total: price,
+                    price: price
+                };
+                cart.push(newItem);
+            }
+
+            updateCart();
+
+            document.getElementById("listado_productos").value = JSON.stringify(cart);
+        }
+
+        function updateCart() {
+            var cartItemsContainer = document.getElementById("cartItems");
+            cartItemsContainer.innerHTML = "";
+
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                var row = "<tr><th scope='row'>" + (i + 1) + "</th><td>" + item.name + "</td><td>" + item.quantity + "</td><td>$" + item.total + "</td><td>$" + item.price + "</td></tr>";
+                cartItemsContainer.innerHTML += row;
+            }
+        }
+    </script>
+</body>
+</html>
